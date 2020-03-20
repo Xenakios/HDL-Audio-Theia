@@ -280,14 +280,15 @@ private:
 
 ///////////////////////////////////////// test area for new HDLImagePPHelpfer-class:
 
-enum vignetteModes {
-	jminMode,
-	addMode,
-	multiplyMode
-};
 
 class HDLImagePPHelper {
 public:
+	enum VignetteModes {
+		jminMode,
+		addMode,
+		multiplyMode
+	};
+
 	void rgbSplitRadial(float redX = 10.f, float redY = 10.f, float greenX = 5.f, float greenY = 5.f,
 		float blueX = 0.f, float blueY = 0.f, float opacity = 1.f) {
 

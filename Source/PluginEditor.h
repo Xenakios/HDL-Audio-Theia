@@ -3,14 +3,14 @@
 #include "PluginProcessor.h"
 #include "HDLImagePP.h"
 #include "HDLPaintings.h"
+#include "HDLBgImageParameter.h"
 #include "HDLWaveshaperSlider.h"
 #include "HDLMixSlider.h"
 #include "HDLLabelLook.h"
 #include "HDLBypassButton.h"
 #include "HDLGrid.h"
-#include "HDLBgImageParameter.h"
 
-class HdlAudioTheiaAudioProcessorEditor  : public AudioProcessorEditor{
+class HdlAudioTheiaAudioProcessorEditor  : public AudioProcessorEditor, public Timer{
 public:
     typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
     typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
@@ -20,10 +20,12 @@ public:
 
     void paint (Graphics&) override;
     void resized() override;
+    void timerCallback() override;
 
 private:
     // paintings
-    HDLMoon moon;
+    HDLBgImageParameter bgImage;
+    double lastMixValue{ 0. };
 
     // look and feel, grid:
     HDLGrid grid;

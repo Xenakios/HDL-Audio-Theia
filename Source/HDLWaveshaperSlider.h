@@ -67,7 +67,7 @@ public:
 
             struct ImagePP : HDLImagePPHelper {
                 void addFX() {
-                    alphaVignette();
+                    alphaVignette(VignetteModes::multiplyMode, .75f);
                     addNoise(.25f);
                 }
             };
@@ -144,6 +144,7 @@ public:
         auto sliderArea = Rectangle<float>(float(x), float(y), float(width), float(height));
         auto sizeF = float(waveshaperImages.size());
         auto waveshaperIdx = int(slider.getValue() * (sizeF - 1.f));
+        g.setImageResamplingQuality(Graphics::lowResamplingQuality);
         g.drawImage(waveshaperImages[waveshaperIdx], sliderArea);
     }
 
