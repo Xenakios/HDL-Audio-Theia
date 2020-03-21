@@ -32,11 +32,11 @@ HdlAudioTheiaAudioProcessorEditor::HdlAudioTheiaAudioProcessorEditor (
     driveAttachment.reset(new SliderAttachment(valueTreeState, "drive", driveParam));
     mixAttachment.reset(new SliderAttachment(valueTreeState, "mix", mixParam));
 
-    bgImage.resize(32);
+    bgImage.resize(36);
 
     float x = 1.f;
     float y = .5f;
-    float scale = 500.f;
+    float scale = 800.f;
     float fps = 60.f;
     startTimer(1000.f / fps);
     setSize (int(x * scale), int(y * scale));

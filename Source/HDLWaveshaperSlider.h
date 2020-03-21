@@ -2,10 +2,7 @@
 
 class HDLWaveshaperSlider : public LookAndFeel_V4 {
 public:
-    HDLWaveshaperSlider() {
-        setColour(Slider::textBoxTextColourId, Colours::transparentBlack);
-        //makeWaveshaperImages();
-    }
+    HDLWaveshaperSlider() { setColour(Slider::textBoxTextColourId, Colours::transparentBlack); }
 
     void makeWaveshaperImages(Colour colour,
         int images = 36, int imageSize = 128, float waveformThicness = 3.5f) {
@@ -144,7 +141,6 @@ public:
         auto sliderArea = Rectangle<float>(float(x), float(y), float(width), float(height));
         auto sizeF = float(waveshaperImages.size());
         auto waveshaperIdx = int(slider.getValue() * (sizeF - 1.f));
-        g.setImageResamplingQuality(Graphics::lowResamplingQuality);
         g.drawImage(waveshaperImages[waveshaperIdx], sliderArea);
     }
 
