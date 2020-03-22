@@ -31,7 +31,7 @@ public:
 
 	void process(float& sample, const float& scSample) {
 		if (!m_bypassParam)
-			sample = mix(sample, std::tanh(m_driveValue * sample) * std::tanh(m_driveValue * scSample), m_mixParam);
+			sample = mix(sample, std::tanh(m_driveValue * (sample * scSample)), m_mixParam);
 	}
 
 private:

@@ -1,8 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "HDLImagePP.h"
-#include "HDLPaintings.h"
 #include "HDLBgImageParameter.h"
 #include "HDLWaveshaperSlider.h"
 #include "HDLMixSlider.h"

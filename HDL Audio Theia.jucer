@@ -14,6 +14,7 @@
       <FILE id="iZUAYw" name="Luna.ttf" compile="0" resource="1" file="Source/Luna.ttf"/>
       <FILE id="Cwo7oC" name="HDLImagePP.h" compile="0" resource="0" file="Source/HDLImagePP.h"/>
       <FILE id="H2UoCq" name="HDLPaintings.h" compile="0" resource="0" file="Source/HDLPaintings.h"/>
+      <FILE id="AgKG1X" name="HDLGainMeter.h" compile="0" resource="0" file="Source/HDLGainMeter.h"/>
       <FILE id="BxRCri" name="HDLMixSlider.h" compile="0" resource="0" file="Source/HDLMixSlider.h"/>
       <FILE id="KFkgOd" name="HDLGrid.h" compile="0" resource="0" file="Source/HDLGrid.h"/>
       <FILE id="TAiLPs" name="HDLWaveshaperSlider.h" compile="0" resource="0"

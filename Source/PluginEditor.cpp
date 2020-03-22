@@ -32,14 +32,22 @@ HdlAudioTheiaAudioProcessorEditor::HdlAudioTheiaAudioProcessorEditor (
     driveAttachment.reset(new SliderAttachment(valueTreeState, "drive", driveParam));
     mixAttachment.reset(new SliderAttachment(valueTreeState, "mix", mixParam));
 
-    bgImage.resize(36);
+    bgImage.resize(32);
 
     float x = 1.f;
     float y = .5f;
     float scale = 800.f;
-    float fps = 60.f;
-    startTimer(1000.f / fps);
-    setSize (int(x * scale), int(y * scale));
+    float fps = 18;
+
+    processor.gainMeter.setImagesCount(12);
+    processor.gainMeter.setRelease(.2f);
+    processor.gainMeter.setFPS(24);
+    processor.gainMeterSC.setImagesCount(12);
+    processor.gainMeterSC.setRelease(.2f);
+    processor.gainMeterSC.setFPS(24);
+
+    setSize(int(x * scale), int(y * scale));
+    startTimer(1000.f / float(fps));
 }
 
 HdlAudioTheiaAudioProcessorEditor::~HdlAudioTheiaAudioProcessorEditor(){}
@@ -50,12 +58,16 @@ void HdlAudioTheiaAudioProcessorEditor::timerCallback() {
         bgImage.setIndex(float(mixParam.getValue()));
         repaint();
     }
+    else if (processor.gainMeter.shouldRepaint() || processor.gainMeterSC.shouldRepaint())
+        repaint();
 }
 
 void HdlAudioTheiaAudioProcessorEditor::paint (Graphics& g){
     g.fillAll(Colours::black);
     g.setImageResamplingQuality(Graphics::highResamplingQuality);
     bgImage.draw(g, getLocalBounds().toFloat());
+    processor.gainMeter.draw(g, grid.getRect(1.f, 0.f, 1.f, 1.f));
+    processor.gainMeterSC.draw(g, grid.getRect(2.f, 0.f, 1.f, 1.f));
     //grid.draw(g, Colours::darkgrey);
 }
 
@@ -65,11 +77,15 @@ void HdlAudioTheiaAudioProcessorEditor::resized(){
     bypassLookAndFeel.setColour(420, mainColour);
     labelLookAndFeel.setColour(420, mainColour);
     driveLookAndFeel.makeWaveshaperImages(mainColour);
+    processor.gainMeter.setImageBounds(16);
+    processor.gainMeterSC.setImageBounds(16);
+    processor.gainMeter.setImages(.75f, 1.f, mainColour, 0.f, 1.f, 0.f, .9f);
+    processor.gainMeterSC.setImages(.75f, 1.f, mainColour, 0.f, 1.f, 0.f, .9f);
 
     auto smallerBounds = Rectangle<int>(getX(), getY(), getWidth() / 4 * 3, getHeight() / 4 * 3);
 
     bgImage.setBounds(smallerBounds);
-    bgImage.setImage(64, 3.f, 7, mainColour);
+    bgImage.setImage(128, 3.f, 7, mainColour);
 
     grid.setGrid(16.f, 8.f, getLocalBounds());
 

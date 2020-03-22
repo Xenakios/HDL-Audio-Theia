@@ -52,7 +52,10 @@ const String HdlAudioTheiaAudioProcessor::getProgramName(int index) { return {};
 
 void HdlAudioTheiaAudioProcessor::changeProgramName (int index, const String& newName){}
 
-void HdlAudioTheiaAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock){}
+void HdlAudioTheiaAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock){
+    gainMeter.setSampleRate(sampleRate);
+    gainMeterSC.setSampleRate(sampleRate);
+}
 
 void HdlAudioTheiaAudioProcessor::releaseResources(){}
 
@@ -76,17 +79,26 @@ void HdlAudioTheiaAudioProcessor::processBlock (AudioBuffer<float>& buffer, Midi
     auto scBus = getBusBuffer(buffer, true, 1);
 
     if (getBus(true, 1)->isEnabled()) {
-        dsp.setParameters(*bypassParam, *driveParam, *mixParam);
+        hdldsp.setParameters(*bypassParam, *driveParam, *mixParam);
 
         for (int s = 0; s < mainBus.getNumSamples(); ++s)
             for (int ch = 0; ch < mainBus.getNumChannels(); ++ch) {
                 auto& sample = *mainBus.getWritePointer(ch, s);
                 auto& scSample = *scBus.getReadPointer(ch, s);
 
-                dsp.process(sample, scSample);
+                gainMeter.setSample(sample);
+                gainMeterSC.setSample(scSample);
+
+                hdldsp.process(sample, scSample);
             }
-        }
-    }
+    } else
+        for (int s = 0; s < mainBus.getNumSamples(); ++s)
+            for (int ch = 0; ch < mainBus.getNumChannels(); ++ch) {
+                auto& sample = *mainBus.getWritePointer(ch, s);
+                gainMeter.setSample(sample);
+                gainMeter.setSample(0.f);
+            }
+}
 
 bool HdlAudioTheiaAudioProcessor::hasEditor() const{ return true; }
 

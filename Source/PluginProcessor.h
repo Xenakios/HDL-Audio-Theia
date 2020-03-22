@@ -2,6 +2,9 @@
 
 #include <JuceHeader.h>
 #include "HDLDSP.h"
+#include "HDLImagePP.h"
+#include "HDLPaintings.h"
+#include "HDLGainMeter.h"
 
 class HdlAudioTheiaAudioProcessor  : public AudioProcessor{
 public:
@@ -36,11 +39,11 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    HDLGainMeterLight gainMeter, gainMeterSC;
 private:
-    HDLDSP dsp;
-
+    HDLDSP hdldsp;
+    
     AudioProcessorValueTreeState parameters;
-
     std::atomic<float>* bypassParam = nullptr;
     std::atomic<float>* driveParam = nullptr;
     std::atomic<float>* mixParam = nullptr;

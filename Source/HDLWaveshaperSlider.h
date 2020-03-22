@@ -140,7 +140,7 @@ public:
         float rotaryEndAngle, Slider& slider) override {
         auto sliderArea = Rectangle<float>(float(x), float(y), float(width), float(height));
         auto sizeF = float(waveshaperImages.size());
-        auto waveshaperIdx = int(slider.getValue() * (sizeF - 1.f));
+        auto waveshaperIdx = int(slider.getValue() * double(sizeF - 1.));
         g.drawImage(waveshaperImages[waveshaperIdx], sliderArea);
     }
 
