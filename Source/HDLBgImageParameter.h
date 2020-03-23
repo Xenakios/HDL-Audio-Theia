@@ -22,20 +22,20 @@ struct HDLBgImageParameter {
 		g.drawImage(m_images[m_idx], bounds, rp, fillAlphaWithCurrentBrush);
 	}
 
-	void setImage(int planetsAmount = 128, float planetMaxSize = 3.f, int cratersAmount = 7, Colour moonColour = Colours::greenyellow) {
+	void makeHugeImages() {
 		Random random;
 		auto widthF = float(m_images[0].getWidth());
 		auto heightF = float(m_images[0].getHeight());
 		auto m_imagesMaxInv = 1.f / m_imagesMax;
-		auto planetMaxSizeInv = 1.f / planetMaxSize;
+		auto planetMaxSizeInv = 1.f / m_planetMaxSize;
 		std::vector<Rectangle<float>> planets, craters;
-		planets.resize(planetsAmount);
-		craters.resize(cratersAmount);
+		planets.resize(m_planetsAmount);
+		craters.resize(m_cratersAmount);
 
 		for (auto& p : planets) {
 			auto x = random.nextFloat() * (widthF * 2.f - widthF);
 			auto y = random.nextFloat() * (heightF * 2.f - heightF);
-			auto size = std::pow(random.nextFloat(), 3) * planetMaxSize;
+			auto size = std::pow(random.nextFloat(), 3) * m_planetMaxSize;
 
 			p = Rectangle<float>(x, y, size, size);
 		}
@@ -46,15 +46,15 @@ struct HDLBgImageParameter {
 
 			Graphics g{ m_images[i] };
 
-			auto moonColourI = Colours::white.interpolatedWith(moonColour, iRel);
+			auto moonColourI = Colours::white.interpolatedWith(m_moonColour, iRel);
 			g.setColour(moonColourI);
-			for (auto& p: planets) {
+			for (auto& p : planets) {
 				auto relSize = p.getWidth() * planetMaxSizeInv;
 				auto distanceFactor = std::pow(relSize, 2) * MathConstants<float>::twoPi;
 				auto planetRotation = AffineTransform::rotation(iRel * distanceFactor, widthF * .65f, heightF * .6f);
 				auto p2 = p.transformed(planetRotation);
 
-				if(p2.getX() > -1.f && p2.getX() < widthF &&
+				if (p2.getX() > -1.f && p2.getX() < widthF &&
 					p2.getY() > -1.f && p2.getY() < heightF)
 					g.fillEllipse(p2);
 			}
@@ -71,7 +71,7 @@ struct HDLBgImageParameter {
 
 			if (i == 0) {
 				auto craterIdx = 0;
-				while (craterIdx < cratersAmount) {
+				while (craterIdx < m_cratersAmount) {
 					auto lineSize = random.nextFloat() * moon.lightRadius;
 					Line<float> line(0.f, 0.f, 0.f, lineSize);
 					line.applyTransform(
@@ -101,7 +101,7 @@ struct HDLBgImageParameter {
 				}
 			}
 			else {
-				for (auto c: craters) {
+				for (auto c : craters) {
 					HDLLight crater;
 					crater.setBounds(c.toNearestInt());
 					crater.setImage(1.f, .5f, .5f, Colours::black.withAlpha(iRel * .1f + .1f), .95f, .99f);
@@ -111,9 +111,23 @@ struct HDLBgImageParameter {
 		}
 	}
 
+	void setImage(int planetsAmount = 128, float planetMaxSize = 3.f, int cratersAmount = 7,
+		Colour moonColour = Colours::greenyellow) {
+		m_planetsAmount = planetsAmount;
+		m_planetMaxSize = planetMaxSize;
+		m_cratersAmount = cratersAmount;
+		m_moonColour = moonColour;
+
+		makeHugeImages();
+	}
+
 	Image& getImage() { return m_images[m_idx]; }
 
 	int m_idx;
 	float m_idxParam, m_imagesMax;
 	std::vector<Image> m_images;
+
+	int m_planetsAmount, m_cratersAmount;
+	float m_planetMaxSize;
+	Colour m_moonColour;
 };

@@ -65,7 +65,7 @@ void HdlAudioTheiaAudioProcessorEditor::timerCallback() {
 
 void HdlAudioTheiaAudioProcessorEditor::paint (Graphics& g){
     g.fillAll(Colours::black);
-    g.setImageResamplingQuality(Graphics::highResamplingQuality);
+    g.setImageResamplingQuality(Graphics::lowResamplingQuality);
     bgImage.draw(g, getLocalBounds().toFloat());
     processor.gainMeter.draw(g, grid.getRect(1.f, 0.f, 1.f, 1.f));
     processor.gainMeterSC.draw(g, grid.getRect(2.f, 0.f, 1.f, 1.f));
@@ -77,7 +77,9 @@ void HdlAudioTheiaAudioProcessorEditor::resized(){
     auto mainColour = Colour(0xffff0000).withRotatedHue(random.nextFloat());
     bypassLookAndFeel.setColour(420, mainColour);
     labelLookAndFeel.setColour(420, mainColour);
+
     driveLookAndFeel.makeWaveshaperImages(mainColour, int(1.f / processor.driveInterval));
+    
     processor.gainMeter.setImageBounds(16);
     processor.gainMeterSC.setImageBounds(16);
     processor.gainMeter.setImages(.75f, 1.f, mainColour, 0.f, 1.f, 0.f, .9f);
@@ -85,7 +87,7 @@ void HdlAudioTheiaAudioProcessorEditor::resized(){
 
     auto smallerBounds = Rectangle<int>(getX(), getY(), getWidth() / 4 * 3, getHeight() / 4 * 3);
 
-    bgImage.setBounds(smallerBounds);
+    bgImage.setBounds(getLocalBounds());
     bgImage.setImage(128, 3.f, 7, mainColour);
 
     grid.setGrid(16.f, 8.f, getLocalBounds());
