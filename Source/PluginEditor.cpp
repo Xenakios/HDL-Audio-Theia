@@ -2,8 +2,8 @@
 #include "PluginEditor.h"
 
 HdlAudioTheiaAudioProcessorEditor::HdlAudioTheiaAudioProcessorEditor (
-    HdlAudioTheiaAudioProcessor& p, AudioProcessorValueTreeState& vts)
-    : AudioProcessorEditor(p), processor(p), valueTreeState(vts){
+    HdlAudioTheiaAudioProcessor& p)
+    : AudioProcessorEditor(p), processor(p){
     
     auto companyName = String(JucePlugin_Manufacturer);
     companyLabel.setText(companyName, NotificationType::dontSendNotification);
@@ -28,15 +28,16 @@ HdlAudioTheiaAudioProcessorEditor::HdlAudioTheiaAudioProcessorEditor (
     addAndMakeVisible(driveParam);
     addAndMakeVisible(mixParam);
 
-    bypassAttachment.reset(new ButtonAttachment(valueTreeState, "bypass", bypassParam));
-    driveAttachment.reset(new SliderAttachment(valueTreeState, "drive", driveParam));
-    mixAttachment.reset(new SliderAttachment(valueTreeState, "mix", mixParam));
+    bypassAttachment = std::make_unique<ButtonAttachment>(processor.valueTreeState, "bypass", bypassParam);
+    driveAttachment = std::make_unique<SliderAttachment>(processor.valueTreeState, "drive", driveParam);
+    mixAttachment = std::make_unique<SliderAttachment>(processor.valueTreeState, "mix", mixParam);
 
-    bgImage.resize(32);
+    bgImage.resize(int(1.f / processor.mixInterval));
 
     float x = 1.f;
-    float y = .5f;
-    float scale = 800.f;
+    float y = .47f;
+    auto screenArea = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
+    float scale = float(screenArea.getWidth()) * .2f;
     float fps = 18;
 
     processor.gainMeter.setImagesCount(12);
@@ -76,7 +77,7 @@ void HdlAudioTheiaAudioProcessorEditor::resized(){
     auto mainColour = Colour(0xffff0000).withRotatedHue(random.nextFloat());
     bypassLookAndFeel.setColour(420, mainColour);
     labelLookAndFeel.setColour(420, mainColour);
-    driveLookAndFeel.makeWaveshaperImages(mainColour);
+    driveLookAndFeel.makeWaveshaperImages(mainColour, int(1.f / processor.driveInterval));
     processor.gainMeter.setImageBounds(16);
     processor.gainMeterSC.setImageBounds(16);
     processor.gainMeter.setImages(.75f, 1.f, mainColour, 0.f, 1.f, 0.f, .9f);

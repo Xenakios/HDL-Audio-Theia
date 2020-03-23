@@ -3,31 +3,14 @@
 
 HdlAudioTheiaAudioProcessor::HdlAudioTheiaAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", AudioChannelSet::stereo(), true)
-                       .withInput("Sidechain", AudioChannelSet::stereo(), false)
-                       ), parameters(*this, nullptr, Identifier("params"),
-                           {
-                               std::make_unique<AudioParameterBool>("bypass",
-                                                                      "Bypass",
-                                                                      false),
-                               std::make_unique<AudioParameterFloat>("drive",
-                                                                   "Drive",
-                                                                   0.f,
-                                                                   1.f,
-                                                                   .5f),
-                               std::make_unique<AudioParameterFloat>("mix",
-                                                                   "Mix",
-                                                                   0.f,
-                                                                   1.f,
-                                                                   0.f)
-                           })
+    : AudioProcessor(BusesProperties()
+        .withInput("Input", AudioChannelSet::stereo(), true)
+        .withOutput("Output", AudioChannelSet::stereo(), true)
+        .withInput("Sidechain", AudioChannelSet::stereo(), false)
+    ), valueTreeState(*this, nullptr, "parameters", createParameters())
 #endif
 {
-    bypassParam = parameters.getRawParameterValue("bypass");
-    driveParam = parameters.getRawParameterValue("drive");
-    mixParam = parameters.getRawParameterValue("mix");
+    valueTreeState.state.addListener(this);
 }
 
 HdlAudioTheiaAudioProcessor::~HdlAudioTheiaAudioProcessor(){ }
@@ -78,8 +61,17 @@ void HdlAudioTheiaAudioProcessor::processBlock (AudioBuffer<float>& buffer, Midi
     auto mainBus = getBusBuffer(buffer, true, 0);
     auto scBus = getBusBuffer(buffer, true, 1);
 
+    if (valueTreeShouldUpdate) {
+        bypassParam =
+            valueTreeState.getRawParameterValue("bypass")->load();
+        driveParam =
+            valueTreeState.getRawParameterValue("drive")->load();
+        mixParam =
+            valueTreeState.getRawParameterValue("mix")->load();
+    }
+
     if (getBus(true, 1)->isEnabled()) {
-        hdldsp.setParameters(*bypassParam, *driveParam, *mixParam);
+        hdldsp.setParameters(bypassParam, driveParam, mixParam);
 
         for (int s = 0; s < mainBus.getNumSamples(); ++s)
             for (int ch = 0; ch < mainBus.getNumChannels(); ++ch) {
@@ -103,11 +95,11 @@ void HdlAudioTheiaAudioProcessor::processBlock (AudioBuffer<float>& buffer, Midi
 bool HdlAudioTheiaAudioProcessor::hasEditor() const{ return true; }
 
 AudioProcessorEditor* HdlAudioTheiaAudioProcessor::createEditor(){
-    return new HdlAudioTheiaAudioProcessorEditor (*this, parameters);
+    return new HdlAudioTheiaAudioProcessorEditor (*this);
 }
 
 void HdlAudioTheiaAudioProcessor::getStateInformation (MemoryBlock& destData){
-    auto state = parameters.copyState();
+    auto state = valueTreeState.copyState();
     std::unique_ptr<XmlElement> xml(state.createXml());
     copyXmlToBinary(*xml, destData);
 }
@@ -116,8 +108,34 @@ void HdlAudioTheiaAudioProcessor::setStateInformation (const void* data, int siz
     std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
     if (xmlState.get() != nullptr)
-        if (xmlState->hasTagName(parameters.state.getType()))
-            parameters.replaceState(ValueTree::fromXml(*xmlState));
+        if (xmlState->hasTagName(valueTreeState.state.getType()))
+            valueTreeState.replaceState(ValueTree::fromXml(*xmlState));
+}
+
+AudioProcessorValueTreeState::ParameterLayout HdlAudioTheiaAudioProcessor::createParameters() {
+    std::vector<std::unique_ptr<RangedAudioParameter>> parameters;
+
+    driveInterval = .1f;
+    mixInterval = .05f;
+
+    parameters.push_back(std::make_unique<AudioParameterBool>(
+        "bypass", "Bypass", 0
+        ));
+    parameters.push_back(std::make_unique<AudioParameterFloat>(
+        "drive", "Drive",
+        NormalisableRange<float>(0.f, 1.f, driveInterval),
+        .5f
+        ));
+    parameters.push_back(std::make_unique<AudioParameterFloat>(
+        "mix", "Mix",
+        NormalisableRange<float>(0.f, 1.f, mixInterval),
+        .5f
+        ));
+    return{ parameters.begin(), parameters.end() };
+}
+
+void HdlAudioTheiaAudioProcessor::valueTreePropertyChanged(ValueTree& tree, const Identifier& property) {
+    valueTreeShouldUpdate.store(true);
 }
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter(){ return new HdlAudioTheiaAudioProcessor(); }

@@ -6,7 +6,8 @@
 #include "HDLPaintings.h"
 #include "HDLGainMeter.h"
 
-class HdlAudioTheiaAudioProcessor  : public AudioProcessor{
+class HdlAudioTheiaAudioProcessor  : public AudioProcessor,
+                                public ValueTree::Listener{
 public:
     HdlAudioTheiaAudioProcessor();
     ~HdlAudioTheiaAudioProcessor();
@@ -40,13 +41,16 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     HDLGainMeterLight gainMeter, gainMeterSC;
+
+    // valueTreeState
+    AudioProcessorValueTreeState valueTreeState;
+    float driveInterval, mixInterval;
 private:
     HDLDSP hdldsp;
     
-    AudioProcessorValueTreeState parameters;
-    std::atomic<float>* bypassParam = nullptr;
-    std::atomic<float>* driveParam = nullptr;
-    std::atomic<float>* mixParam = nullptr;
-
+    AudioProcessorValueTreeState::ParameterLayout createParameters();
+    float bypassParam, driveParam, mixParam;
+    void valueTreePropertyChanged(ValueTree& tree, const Identifier& property) override;
+    std::atomic<bool> valueTreeShouldUpdate{ false };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HdlAudioTheiaAudioProcessor)
 };

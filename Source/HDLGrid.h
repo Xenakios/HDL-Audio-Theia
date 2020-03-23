@@ -2,6 +2,8 @@
 
 class HDLGrid {
 public:
+	// x = amount of blocks on x-achsis
+	// y = amount of blocks on y-achsis
 	void setGrid(float x, float y, Rectangle<int>& localBounds) {
 		bounds = localBounds.toFloat();
 		blocksX = x;

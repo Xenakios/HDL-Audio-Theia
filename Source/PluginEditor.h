@@ -13,7 +13,7 @@ public:
     typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
     typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
-    HdlAudioTheiaAudioProcessorEditor (HdlAudioTheiaAudioProcessor&, AudioProcessorValueTreeState&);
+    HdlAudioTheiaAudioProcessorEditor (HdlAudioTheiaAudioProcessor&);
     ~HdlAudioTheiaAudioProcessorEditor();
 
     void paint (Graphics&) override;
@@ -21,7 +21,7 @@ public:
     void timerCallback() override;
 
 private:
-    // paintings
+    // background paintings:
     HDLBgImageParameter bgImage;
     double lastMixValue{ 0. };
 
@@ -37,10 +37,9 @@ private:
     Label titleLabel;
 
     // parameters:
-    AudioProcessorValueTreeState& valueTreeState;
     ToggleButton bypassParam;
-    std::unique_ptr<ButtonAttachment> bypassAttachment;
     Slider driveParam, mixParam;
+    std::unique_ptr<ButtonAttachment> bypassAttachment;
     std::unique_ptr<SliderAttachment> driveAttachment, mixAttachment;
 
     // processor:
