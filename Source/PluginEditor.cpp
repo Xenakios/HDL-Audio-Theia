@@ -37,7 +37,7 @@ HdlAudioTheiaAudioProcessorEditor::HdlAudioTheiaAudioProcessorEditor (
     float x = 1.f;
     float y = .47f;
     auto screenArea = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
-    float scale = float(screenArea.getWidth()) * .2f;
+    float scale = float(screenArea.getWidth()) * .3f;
     float fps = 18;
 
     processor.gainMeter.setImagesCount(12);

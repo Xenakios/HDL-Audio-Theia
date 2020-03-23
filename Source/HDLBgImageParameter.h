@@ -33,8 +33,8 @@ struct HDLBgImageParameter {
 		craters.resize(cratersAmount);
 
 		for (auto& p : planets) {
-			auto x = random.nextFloat() * widthF;
-			auto y = random.nextFloat() * heightF;
+			auto x = random.nextFloat() * (widthF * 2.f - widthF);
+			auto y = random.nextFloat() * (heightF * 2.f - heightF);
 			auto size = std::pow(random.nextFloat(), 3) * planetMaxSize;
 
 			p = Rectangle<float>(x, y, size, size);
@@ -53,7 +53,10 @@ struct HDLBgImageParameter {
 				auto distanceFactor = std::pow(relSize, 2) * MathConstants<float>::twoPi;
 				auto planetRotation = AffineTransform::rotation(iRel * distanceFactor, widthF * .65f, heightF * .6f);
 				auto p2 = p.transformed(planetRotation);
-				g.fillEllipse(p2);
+
+				if(p2.getX() > -1.f && p2.getX() < widthF &&
+					p2.getY() > -1.f && p2.getY() < heightF)
+					g.fillEllipse(p2);
 			}
 
 			HDLLight moon;
